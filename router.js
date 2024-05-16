@@ -14,5 +14,14 @@ router.get("/all", async function(req,rep){
     rep.json(response);
 })
 
+router.get("/id/:id", async function(req, rep){
+    try {
+
+    } catch {
+        
+    }
+})
+
+
 export default router ;
 

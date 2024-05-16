@@ -12,7 +12,7 @@ const schemaBalade = new Schema({
     categorie: String,
     nom_poi: String,
     date_saisie: String,
-    mot_cle: [String],
+    mot_cle: Array,
     ville: String,
     texte_intro: String,
     texte_description: String,

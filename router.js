@@ -1,6 +1,6 @@
 import { Router } from  "express";
 import { Balade } from "./model.js"; //find, updateOne, aggregate, deleteOne
-// import { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 
 const router = Router();
@@ -108,25 +108,6 @@ router.post("/add", async function (req, rep) {
 });
 
 //QUESTION 11 
-router.put("/add-mot-cle/:id", async function (req, rep) {
-    const id = req.params.id;
-    if (!isValidObjectId(id)) {
-      return rep.status(400).json({ msg: "ID invalide" });
-    }
-    const balade = await Balade.findById(id);
-    if (!balade) {
-    return rep.status(404).json({ msg: "Balade non trouvée" });
-    }
-    const nouveauMotCle = req.body.mot_cle;
-  
-    if (balade.mot_cle.includes(nouveauMotCle)) {
-    return rep.status(409).json({ msg: "Mot clé déjà présent" });
-    }
-    balade.mot_cle.push(nouveauMotCle);
-    await balade.save();
-    rep.status(200).json({ msg: "Mot clé ajouté avec succès" });
-  });
-
 
 //QUESTION 12
 router.put('/update-one/:id', async (req, res) => {

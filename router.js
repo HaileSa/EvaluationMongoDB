@@ -98,14 +98,93 @@ router.get("/categories", async function (req, rep) {
 //QUESTION 10
 router.post("/add", async function (req, rep) {
     const newBalade = new Balade(req.body);
-  
+
     if (!newBalade.nom_poi || !newBalade.adresse || !newBalade.categorie) {
-      return rep.status(400).json({ msg: "Missing required fields" });
+      return rep.status(400).json({ msg: "Il manque des champs" });
     }
   
     const result = await newBalade.save();
     rep.json(result);
 });
+
+//QUESTION 11 
+router.put("/add-mot-cle/:id", async function (req, rep) {
+    const id = req.params.id;
+    if (!isValidObjectId(id)) {
+      return rep.status(400).json({ msg: "ID invalide" });
+    }
+    const balade = await Balade.findById(id);
+    if (!balade) {
+    return rep.status(404).json({ msg: "Balade non trouvée" });
+    }
+    const nouveauMotCle = req.body.mot_cle;
+  
+    if (balade.mot_cle.includes(nouveauMotCle)) {
+    return rep.status(409).json({ msg: "Mot clé déjà présent" });
+    }
+    balade.mot_cle.push(nouveauMotCle);
+    await balade.save();
+    rep.status(200).json({ msg: "Mot clé ajouté avec succès" });
+  });
+
+
+//QUESTION 12
+router.put('/update-one/:id', async (req, res) => {
+    try {
+      const updatedBalade = await Balade.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+      if (!updatedBalade) {
+        return res.status(404).json({ message: 'Balade non présente dans notre base' });
+      }
+      res.status(200).json(updatedBalade);
+    } catch (error) {
+      console.log(error)
+      if (error.kind === 'ObjectId') {
+        return res.status(400).json({ message: 'ID invalide' });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+//QUESTION 13 
+router.put('/update-many/:search', async (req, res) => {
+    const search = req.params.search;
+    const newNomPoi = req.body.nom_poi;
+  
+    if (!newNomPoi) {
+      return res.status(400).json({ message: 'Un nouveau nom_poi est requis' });
+    }
+  
+    try {
+      const result = await Balade.updateMany(
+        { texte_description: { $regex: search, $options: 'i' } },
+        { $set: { nom_poi: newNomPoi } }
+      );
+  
+      if (result.nModified === 0) {
+        return res.status(404).json({ message: "Aucune correspondance" });
+      }
+  
+      res.status(200).json({ message: "Balades mises à jour" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });  
+
+  //QUESTION 14
+  router.delete('/delete/:id', async (req, res) => {
+    try {
+      const deletedBalade = await Balade.findByIdAndDelete(req.params.id);
+      if (!deletedBalade) {
+        return res.status(404).json({ message: "Balade pas trouvée" });
+      }
+      res.status(200).json({ message: "Balade supprimée de la base de données" });
+    } catch (error) {
+      if (error.kind === "ObjectId") {
+        return res.status(400).json({ message: "ID invalide" });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 
 

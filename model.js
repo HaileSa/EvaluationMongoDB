@@ -11,7 +11,7 @@ const schemaBalade = new Schema({
     legende: String,
     categorie: String,
     nom_poi: String,
-    date_saisie: Date,
+    date_saisie: String,
     mot_cle: [String],
     ville: String,
     texte_intro: String,
